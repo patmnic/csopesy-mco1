@@ -7,6 +7,7 @@ public class Process {
     int waitTime;
     int startTime;
     int previousTime;
+    int endTime;
 
     public Process(int ID, int arrivalTime, int burstTime){
         this.ID = ID;
@@ -15,5 +16,6 @@ public class Process {
         this.waitTime = 0;
         this.startTime = 0;
         this.previousTime = 0;
+        this.endTime = 0;
     }
 }

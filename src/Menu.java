@@ -55,7 +55,7 @@ public class Menu {
         }
 
         switch(algorithm){
-            case 0: algorithms.firstComeFirstServe();
+            case 0: algorithms.firstComeFirstServe(processNum, process);
                     break;
             case 1: algorithms.shortestJobFirst();
                     break;
