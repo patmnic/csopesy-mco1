@@ -1,7 +1,7 @@
 package src;
 
 public class Algorithms {
-    public void firstComeFirstServe(process, processNum){
+    public void firstComeFirstServe(){
         System.out.println("First Come First Serve (FCFS)");
 
     }
