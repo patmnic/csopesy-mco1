@@ -25,6 +25,8 @@ public class Menu {
             System.out.println("File not found!");
         }
 
+        scanner.close();
+
         Scanner fileScanner = new Scanner(file);
 
         algorithm = fileScanner.nextInt();
@@ -54,16 +56,14 @@ public class Menu {
              */
         }
 
-        switch(algorithm){
-            case 0: algorithms.firstComeFirstServe(processNum, process);
-                    break;
-            case 1: algorithms.shortestJobFirst();
-                    break;
-            case 2: algorithms.shortestRemainingTimeFirst();
-                    break;
-            case 3: algorithms.roundRobin();
-                    break;
-
+        switch (algorithm) {
+            case 0 -> algorithms.firstComeFirstServe(processNum, process);
+            case 1 -> algorithms.shortestJobFirst();
+            case 2 -> algorithms.shortestRemainingTimeFirst();
+            case 3 -> algorithms.roundRobin(roundRobinTime, processNum, process);
         }
+        
+        fileScanner.close();
+        return;
     }
 }
