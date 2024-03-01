@@ -59,7 +59,7 @@ public class Menu {
                     break;
             case 1: algorithms.shortestJobFirst();
                     break;
-            case 2: algorithms.shortestRemainingTimeFirst();
+            case 2: algorithms.shortestRemainingTimeFirst(processNum, process);
                     break;
             case 3: algorithms.roundRobin();
                     break;
