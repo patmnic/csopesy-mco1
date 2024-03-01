@@ -1,14 +1,14 @@
 package src;
 
 public class Process {
-    int ID;
-    int arrivalTime;
-    int burstTime;
-    int waitTime;
-    int startTime;
-    int endTime;
+    int ID; // ID of process
+    int arrivalTime; // when did process arrive
+    int burstTime; // CPU burst of process
+    int waitTime; // wait time of process
+    int startTime; // when did the process run in the CPU
+    int endTime; // when did the process finish
     int remainingBurstTime;
-    boolean completed;
+    boolean completed; // complete = true or incomplete = false
 
     public Process(int ID, int arrivalTime, int burstTime){
         this.ID = ID;

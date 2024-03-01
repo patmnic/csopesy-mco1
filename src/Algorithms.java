@@ -15,18 +15,113 @@ public class Algorithms {
 
     public void firstComeFirstServe(int processNum, Process[] processes){
         System.out.println("First Come First Serve Algorithm (FCFS)");
-        int totalTime = 0, totalWaitTime = 0;
-        float avgTime = 0;
+
+        Process tempProcess = new Process(0,0,0); // selection sort by arrival time
+        for(int i = 0; i < processNum - 1; i++){ // sort by arrival time
+            int minimum = i;
+            for(int j = i + 1; j < processNum; j++){
+                if(processes[j].arrivalTime < processes[minimum].arrivalTime){
+                    minimum = j;
+                }
+            }
+
+            tempProcess = processes[minimum];
+            processes[minimum] = processes[i];
+            processes[i] = tempProcess;
+        }
+
+        int totalTime = processes[0].burstTime;
         processes[0].endTime = processes[0].burstTime;
-        totalTime = processes[0].burstTime;
 
         for(int i = 1; i < processNum; i++){ // start, end, waiting time for process
+            while(totalTime < processes[i].arrivalTime){
+                totalTime++;
+                processes[i].waitTime++;
+            }
             processes[i].startTime = totalTime;
             processes[i].waitTime = processes[i].startTime - processes[i].arrivalTime;
             processes[i].endTime = processes[i].startTime + processes[i].burstTime;
             totalTime = processes[i].endTime;
         }
 
+        printResults(processNum, processes);
+    }
+
+
+
+    public void shortestJobFirst(int processNum, Process[] processes){
+        System.out.println("Shortest Job First Algorithm (SJF)");
+        int totalTime = processes[0].burstTime;
+        processes[0].endTime = processes[0].burstTime;
+
+        Process tempProcess = new Process(0,0,0); // for sorting
+        for(int i = 0; i < processNum - 1; i++){ // sort by arrival time
+            int minimum = i;
+            for(int j = i + 1; j < processNum; j++){
+                if(processes[j].arrivalTime < processes[minimum].arrivalTime){
+                    minimum = j;
+                }
+            }
+
+            tempProcess = processes[minimum];
+            processes[minimum] = processes[i];
+            processes[i] = tempProcess;
+        }
+
+        for(int i = 0; i < processNum; i++){
+            System.out.print(processes[i].ID + " ");
+            System.out.print(processes[i].arrivalTime + " ");
+            System.out.println(processes[i].burstTime);
+        }
+        System.out.println();
+
+        processes[0].endTime = processes[0].burstTime;
+        totalTime = processes[0].burstTime;
+
+        for(int i = 1; i < processNum; i++){ // start, end, waiting time for process
+            if(totalTime >= processes[i].arrivalTime) {
+                for (int j = 1; j < processNum - 1; j++) { // selection sort algorithm according to burst
+                    int minimum = j;
+
+                    for (int k = j + 1; k < processNum; k++) {
+                        if ((processes[k].burstTime < processes[minimum].burstTime && !processes[k].completed) || // if burst time is smaller, and the process has not yet been completed, set minimum to k
+                                (processes[k].burstTime == processes[minimum].burstTime && processes[k].ID < processes[minimum].ID)) {
+                            minimum = k;
+                        }
+                    }
+                    tempProcess = processes[minimum];
+                    processes[minimum] = processes[j];
+                    processes[j] = tempProcess;
+                }
+            }
+
+            //temp print
+            for(int l = 0; l < processNum; l++){
+                System.out.print(processes[l].ID + " ");
+                System.out.print(processes[l].arrivalTime + " ");
+                System.out.println(processes[l].burstTime);
+            }
+            System.out.println();
+            //temp print
+
+            while(totalTime < processes[i].arrivalTime){ // in case there is no process available at the time
+                totalTime++;
+                processes[i].waitTime++;
+            }
+
+            processes[i].startTime = totalTime;
+            processes[i].waitTime = processes[i].startTime - processes[i].arrivalTime;
+            processes[i].endTime = processes[i].startTime + processes[i].burstTime;
+            totalTime = processes[i].endTime;
+            processes[i].completed = true;
+        }
+
+        printResults(processNum, processes);
+    }
+
+    public void printResults(int processNum, Process[] processes){
+        int totalWaitTime = 0;
+        float avgTime;
         for(int j = 0; j < processNum; j++){ // total wait time
             totalWaitTime = totalWaitTime + processes[j].waitTime;
         }
@@ -39,12 +134,6 @@ public class Algorithms {
             System.out.println("Waiting time: " + processes[k].waitTime);
         }
         System.out.printf("Average waiting time: %.2f", avgTime);
-    }
-
-
-
-    public void shortestJobFirst(){
-        System.out.println("Shortest Job First Algorithm (SJF)");
     }
 
     public void shortestRemainingTimeFirst(int processNum, Process[] processes) {
