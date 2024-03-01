@@ -59,7 +59,7 @@ public class Menu {
         switch (algorithm) {
             case 0 -> algorithms.firstComeFirstServe(processNum, process);
             case 1 -> algorithms.shortestJobFirst();
-            case 2 -> algorithms.shortestRemainingTimeFirst();
+            case 2 -> algorithms.shortestRemainingTimeFirst(processNum, process);
             case 3 -> algorithms.roundRobin(roundRobinTime, processNum, process);
         }
         

@@ -1,6 +1,8 @@
 package src;
 
 import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Algorithms {
     // public boolean isDone(Process[] processes) {
@@ -45,8 +47,74 @@ public class Algorithms {
         System.out.println("Shortest Job First Algorithm (SJF)");
     }
 
-    public void shortestRemainingTimeFirst(){
+    public void shortestRemainingTimeFirst(int processNum, Process[] processes) {
         System.out.println("Shortest Remaining Time First Algorithm (SRTF)");
+
+        int currentTime = 0;
+        int completedProcesses = 0;
+        int totalWaitTime = 0;
+        int currentProcessIndex = -1; // Index of currently executing process
+
+        List<Process> completedList = new ArrayList<>();
+        StringBuilder ganttChart = new StringBuilder();
+
+        while (completedProcesses < processNum) {
+            Process shortestJob = null;
+            int shortestTime = Integer.MAX_VALUE;
+            // CURRENT PROBLEM, NO PRINTING WHEN SWITCHING PROCESSES AND MISPRINT OF SWITCHED PROCESSES
+            // Find the process with the shortest remaining burst time at the current time
+            for (int i = 0; i < processNum; i++) {
+                Process process = processes[i];
+                if (!process.completed && process.arrivalTime <= currentTime && process.remainingBurstTime < shortestTime) {
+                    shortestJob = process;
+                    shortestTime = process.remainingBurstTime;
+                }
+            }
+
+            if (shortestJob != null) {
+                if (currentProcessIndex != -1 && currentProcessIndex != shortestJob.ID) {
+                    ganttChart.append("| ");
+                }
+                ganttChart.append("P[").append(shortestJob.ID).append("] ");
+                shortestJob.remainingBurstTime--;
+
+                if (shortestJob.remainingBurstTime == 0) {
+                    shortestJob.endTime = currentTime + 1;
+                    shortestJob.completed = true;
+                    completedProcesses++;
+                    totalWaitTime += currentTime + 1 - shortestJob.arrivalTime - shortestJob.burstTime;
+                    completedList.add(shortestJob);
+                }
+
+                // Update start time if the process just started executing
+                if (shortestJob.startTime == 0) {
+                    shortestJob.startTime = currentTime;
+                }
+
+                currentProcessIndex = shortestJob.ID;
+            } else {
+                ganttChart.append("| ");
+            }
+
+            currentTime++;
+        }
+
+        // Print Gantt chart (DOUBLE CHECKING, REMOVE THIS LATER)
+        System.out.println("Gantt Chart:");
+        System.out.println(ganttChart.toString());
+        System.out.println("");
+
+        // Print process details
+        for (Process process : completedList) {
+            System.out.println("P[" + process.ID +
+                    "] Start Time: " + process.startTime +
+                    " End Time: " + process.endTime +
+                    " Waiting Time: " + (process.startTime - process.arrivalTime));
+        }
+
+        // Calculate and print average waiting time
+        float avgWaitTime = (float) totalWaitTime / processNum;
+        System.out.printf("Average Waiting Time: %.2f\n", avgWaitTime);
     }
 
     public void roundRobin(int roundRobinTime, int processNum, Process[] processes){
