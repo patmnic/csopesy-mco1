@@ -219,13 +219,13 @@ public class Algorithms {
         while (!order.isEmpty() || !queue.isEmpty()) {
             if (queue.isEmpty()) {
                 while (!order.isEmpty()){
-                    if(order.getFirst().arrivalTime <= totalTime) {
-                        queue.add(order.getFirst());
-                        order.removeFirst();
+                    if(order.get(0).arrivalTime <= totalTime) {
+                        queue.add(order.get(0));
+                        order.remove(0);
                     }
                     else {
                         if (queue.isEmpty()) {
-                            totalTime = order.getFirst().arrivalTime;
+                            totalTime = order.get(0).arrivalTime;
                         }
                         break;
                     }
@@ -237,9 +237,9 @@ public class Algorithms {
                 totalWaitTime += process.waitTime;
                 if (process.burstTime != 0){
                     while (!order.isEmpty()){
-                        if(order.getFirst().arrivalTime <= totalTime) {
-                            queue.add(order.getFirst());
-                            order.removeFirst();
+                        if(order.get(0).arrivalTime <= totalTime) {
+                            queue.add(order.get(0));
+                            order.remove(0);
                         }
                         else break;
                     }
