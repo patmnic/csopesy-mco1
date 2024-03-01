@@ -142,16 +142,15 @@ public class Algorithms {
         int currentTime = 0;
         int completedProcesses = 0;
         int totalWaitTime = 0;
-        int currentProcessIndex = -1; // Index of currently executing process
 
         List<Process> completedList = new ArrayList<>();
-        StringBuilder ganttChart = new StringBuilder();
 
-        while (completedProcesses < processNum) {
+        Process currentSRTF = null;
+
+        while(completedProcesses < processNum) {
             Process shortestJob = null;
             int shortestTime = Integer.MAX_VALUE;
-            // CURRENT PROBLEM, NO PRINTING WHEN SWITCHING PROCESSES AND MISPRINT OF SWITCHED PROCESSES
-            // Find the process with the shortest remaining burst time at the current time
+            //Finds shortestjob
             for (int i = 0; i < processNum; i++) {
                 Process process = processes[i];
                 if (!process.completed && process.arrivalTime <= currentTime && process.remainingBurstTime < shortestTime) {
@@ -159,12 +158,20 @@ public class Algorithms {
                     shortestTime = process.remainingBurstTime;
                 }
             }
+            //facilitate switches before setting shortest to current
+            if (currentSRTF != null){ //idea here it compares a from b, then adds a in appropriately.
+                if (currentSRTF.ID != shortestJob.ID && currentSRTF.completed == false){
+                    currentSRTF.startTime = currentTime - (currentTime - currentSRTF.remainingBurstTime) - 1;
+                    currentSRTF.endTime = currentTime;
+                    currentSRTF.waitTime = currentTime - currentSRTF.arrivalTime;
+                    completedList.add(currentSRTF);
+                    currentSRTF.arrivalTime = shortestJob.startTime; //currentSRTF switches, thus waits now on this arrival.
+                }
+            } 
+
+            currentSRTF = shortestJob;
 
             if (shortestJob != null) {
-                if (currentProcessIndex != -1 && currentProcessIndex != shortestJob.ID) {
-                    ganttChart.append("| ");
-                }
-                ganttChart.append("P[").append(shortestJob.ID).append("] ");
                 shortestJob.remainingBurstTime--;
 
                 if (shortestJob.remainingBurstTime == 0) {
@@ -179,19 +186,10 @@ public class Algorithms {
                 if (shortestJob.startTime == 0) {
                     shortestJob.startTime = currentTime;
                 }
-
-                currentProcessIndex = shortestJob.ID;
-            } else {
-                ganttChart.append("| ");
-            }
+            } 
 
             currentTime++;
         }
-
-        // Print Gantt chart (DOUBLE CHECKING, REMOVE THIS LATER)
-        System.out.println("Gantt Chart:");
-        System.out.println(ganttChart.toString());
-        System.out.println("");
 
         // Print process details
         for (Process process : completedList) {
