@@ -242,7 +242,10 @@ public class Algorithms {
                 Process process = queue.poll();
                 int burst = process.run(roundRobinTime, totalTime);
                 totalTime += burst;
-                totalWaitTime += process.waitTime;
+                if(process.burstTime == 0) {
+                    totalWaitTime += process.waitTime;
+                }
+
                 if (process.burstTime != 0){
                     while (!order.isEmpty()){
                         if(order.get(0).arrivalTime <= totalTime) {
