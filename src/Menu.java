@@ -29,6 +29,7 @@ public class Menu {
             fileScanner = new Scanner(file);
         } catch (Exception e) {
             System.out.printf("%s.txt not found.\n", fileName);
+            return;
         }
 
         assert fileScanner != null;

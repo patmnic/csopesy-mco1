@@ -3,7 +3,7 @@
 ## How to Run
 1. Open folder in command line
 2. Run `javac -d classes src/*.java` to compile.
-3. Run `java -classpath .\classes src.Menu` to run the program.
+3. Run `java -classpath ./classes src.Menu` to run the program.
 
 ## How to Use
 1. Place desired input file in the `Inputs` folder.
