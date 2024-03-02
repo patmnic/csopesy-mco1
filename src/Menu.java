@@ -19,16 +19,19 @@ public class Menu {
         fileName = scanner.nextLine();
 
         File file = null;
-        try {
-            file = new File("Inputs/" + fileName + ".txt");
-        } catch (Exception e) {
-            System.out.println("File not found!");
-        }
+        file = new File("Inputs/" + fileName + ".txt");
 
         scanner.close();
 
-        Scanner fileScanner = new Scanner(file);
+        Scanner fileScanner = null;
 
+        try {
+            fileScanner = new Scanner(file);
+        } catch (Exception e) {
+            System.out.printf("%s.txt not found.\n", fileName);
+        }
+
+        assert fileScanner != null;
         algorithm = fileScanner.nextInt();
         processNum = fileScanner.nextInt();
         roundRobinTime = fileScanner.nextInt();
