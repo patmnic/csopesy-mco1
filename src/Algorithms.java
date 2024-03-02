@@ -5,18 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Algorithms {
-    // public boolean isDone(Process[] processes) {
-    //     for (Process process : processes) {
-    //         if (process.burstTime != 0)
-    //             return false;
-    //     }
-    //     return true;
-    // }
 
     public void firstComeFirstServe(int processNum, Process[] processes){
         System.out.println("First Come First Serve Algorithm (FCFS)");
 
-        Process tempProcess = new Process(0,0,0); // selection sort by arrival time
+        Process tempProcess; // selection sort by arrival time
         for(int i = 0; i < processNum - 1; i++){ // sort by arrival time
             int minimum = i;
             for(int j = i + 1; j < processNum; j++){
@@ -54,7 +47,7 @@ public class Algorithms {
         int totalTime = 0;
         boolean nonZero = false; // check if all processes have zero arrival time (true) or not (false)
 
-        Process tempProcess = new Process(0,0,0); // for sorting
+        Process tempProcess; // for sorting
         for(int i = 0; i < processNum - 1; i++){ // sort by arrival time
             int minimum = i;
             for(int j = i + 1; j < processNum; j++){
