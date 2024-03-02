@@ -142,6 +142,7 @@ public class Algorithms {
         int currentTime = 0;
         int completedProcesses = 0;
         int totalWaitTime = 0;
+        int startTime = 0;
 
         List<Process> completedList = new ArrayList<>();
 
@@ -160,12 +161,13 @@ public class Algorithms {
             }
             //facilitate switches before setting shortest to current
             if (currentSRTF != null){ //idea here it compares a from b, then adds a in appropriately.
-                if (currentSRTF.ID != shortestJob.ID && currentSRTF.completed == false){
-                    currentSRTF.startTime = currentTime - (currentTime - currentSRTF.remainingBurstTime) - 1;
+                if (currentSRTF.ID != shortestJob.ID && !currentSRTF.completed){
+                    currentSRTF.startTime = startTime;
+                    currentSRTF.waitTime = startTime - currentSRTF.endTime;
                     currentSRTF.endTime = currentTime;
-                    currentSRTF.waitTime = currentTime - currentSRTF.arrivalTime;
-                    completedList.add(currentSRTF);
+                    completedList.add(new Process(currentSRTF));
                     currentSRTF.arrivalTime = shortestJob.startTime; //currentSRTF switches, thus waits now on this arrival.
+                    startTime = currentTime;
                 }
             } 
 
@@ -175,6 +177,7 @@ public class Algorithms {
                 shortestJob.remainingBurstTime--;
 
                 if (shortestJob.remainingBurstTime == 0) {
+                    shortestJob.waitTime = currentTime + 1 - shortestJob.arrivalTime - shortestJob.burstTime;
                     shortestJob.endTime = currentTime + 1;
                     shortestJob.completed = true;
                     completedProcesses++;
@@ -193,10 +196,7 @@ public class Algorithms {
 
         // Print process details
         for (Process process : completedList) {
-            System.out.println("P[" + process.ID +
-                    "] Start Time: " + process.startTime +
-                    " End Time: " + process.endTime +
-                    " Waiting Time: " + (process.startTime - process.arrivalTime));
+            process.print();
         }
 
         // Calculate and print average waiting time

@@ -17,8 +17,19 @@ public class Process {
         this.waitTime = 0;
         this.startTime = 0;
         this.endTime = arrivalTime;
-		this.remainingBurstTime = burstTime;
+        this.remainingBurstTime = burstTime;
         this.completed = false;
+    }
+
+    public Process(Process process){
+        this.ID = process.ID;
+        this.arrivalTime = process.arrivalTime;
+        this.burstTime = process.burstTime;
+        this.waitTime = process.waitTime;
+        this.startTime = process.startTime;
+        this.endTime = process.endTime;
+        this.remainingBurstTime = process.remainingBurstTime;
+        this.completed = process.completed;
     }
 
     public void print(){
