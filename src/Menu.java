@@ -37,11 +37,6 @@ public class Menu {
         processNum = fileScanner.nextInt();
         roundRobinTime = fileScanner.nextInt();
 
-        /*
-        System.out.println(algorithm);
-        System.out.println(processNum);
-        System.out.println(roundRobinTime);
-         */
 
         Process[] process = new Process[processNum];
 
@@ -53,11 +48,7 @@ public class Menu {
             burstTime = fileScanner.nextInt();
 
             process[i] = new Process(ID, arrivalTime, burstTime);
-            /*
-            System.out.print(process[i].ID + " ");
-            System.out.print(process[i].arrivalTime + " ");
-            System.out.println(process[i].burstTime);
-             */
+
         }
 
         switch (algorithm) {
