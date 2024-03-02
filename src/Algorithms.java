@@ -51,14 +51,17 @@ public class Algorithms {
 
     public void shortestJobFirst(int processNum, Process[] processes){
         System.out.println("Shortest Job First Algorithm (SJF)");
-        int totalTime = processes[0].burstTime;
-        processes[0].endTime = processes[0].burstTime;
+        int totalTime = 0;
+        boolean nonZero = false; // check if all processes have zero arrival time (true) or not (false)
 
         Process tempProcess = new Process(0,0,0); // for sorting
         for(int i = 0; i < processNum - 1; i++){ // sort by arrival time
             int minimum = i;
             for(int j = i + 1; j < processNum; j++){
                 if(processes[j].arrivalTime < processes[minimum].arrivalTime){
+                    minimum = j;
+                }
+                else if(processes[j].arrivalTime == processes[minimum].arrivalTime && processes[j].ID < processes[minimum].ID){
                     minimum = j;
                 }
             }
@@ -68,24 +71,32 @@ public class Algorithms {
             processes[i] = tempProcess;
         }
 
+        // check if all processes have zero arrival time or if there is at least one nonzero arrival time
         for(int i = 0; i < processNum; i++){
-            System.out.print(processes[i].ID + " ");
-            System.out.print(processes[i].arrivalTime + " ");
-            System.out.println(processes[i].burstTime);
+            if (processes[i].arrivalTime != 0) {
+                nonZero = true;
+                break;
+            }
         }
-        System.out.println();
 
-        processes[0].endTime = processes[0].burstTime;
-        totalTime = processes[0].burstTime;
+        if(nonZero){ // allow 0 arrival time process to start immediately
+            processes[0].startTime = totalTime;
+            processes[0].endTime = processes[0].startTime + processes[0].burstTime;
+            processes[0].waitTime = processes[0].startTime - processes[0].arrivalTime;
+            totalTime = processes[0].endTime;
+            processes[0].completed = true;
+        }
 
-        for(int i = 1; i < processNum; i++){ // start, end, waiting time for process
-            if(totalTime >= processes[i].arrivalTime) {
-                for (int j = 1; j < processNum - 1; j++) { // selection sort algorithm according to burst
+        for(int i = 0; i < processNum; i++){ // start, end, waiting time for process
+            if(nonZero && i == 0){
+                i++;
+            }
+            if(nonZero) {
+                for (int j = i; j < processNum - 1; j++) { // selection sort algorithm according to burst
                     int minimum = j;
-
                     for (int k = j + 1; k < processNum; k++) {
-                        if ((processes[k].burstTime < processes[minimum].burstTime && !processes[k].completed) || // if burst time is smaller, and the process has not yet been completed, set minimum to k
-                                (processes[k].burstTime == processes[minimum].burstTime && processes[k].ID < processes[minimum].ID)) {
+                        if ((!processes[k].completed && processes[k].arrivalTime < totalTime) && ((processes[k].burstTime < processes[minimum].burstTime) || // if burst time is smaller, and the process has not yet been completed, set minimum to k
+                                (processes[k].burstTime == processes[minimum].burstTime && processes[k].ID < processes[minimum].ID))) { // or same burst time but lower ID
                             minimum = k;
                         }
                     }
@@ -94,15 +105,21 @@ public class Algorithms {
                     processes[j] = tempProcess;
                 }
             }
+            else{ // for all zero arrival time
+                for (int j = 0; j < processNum - 1; j++) { // selection sort algorithm according to burst
+                    int minimum = j;
 
-            //temp print
-            for(int l = 0; l < processNum; l++){
-                System.out.print(processes[l].ID + " ");
-                System.out.print(processes[l].arrivalTime + " ");
-                System.out.println(processes[l].burstTime);
+                    for (int k = j + 1; k < processNum; k++) {
+                        if (!processes[k].completed && ((processes[k].burstTime < processes[minimum].burstTime) ||
+                                (processes[k].burstTime == processes[minimum].burstTime && processes[k].ID < processes[minimum].ID))) {
+                            minimum = k; // change minimum to k
+                        }
+                    }
+                    tempProcess = processes[minimum];
+                    processes[minimum] = processes[j];
+                    processes[j] = tempProcess;
+                }
             }
-            System.out.println();
-            //temp print
 
             while(totalTime < processes[i].arrivalTime){ // in case there is no process available at the time
                 totalTime++;
