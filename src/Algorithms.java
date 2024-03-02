@@ -173,7 +173,7 @@ public class Algorithms {
             if (currentSRTF != null){ //idea here it compares a from b, then adds a in appropriately.
                 if (currentSRTF.ID != shortestJob.ID && !currentSRTF.completed){
                     currentSRTF.startTime = startTime;
-                    currentSRTF.waitTime = startTime - currentSRTF.endTime;
+                    currentSRTF.waitTime += (startTime - currentSRTF.endTime);
                     currentSRTF.endTime = currentTime;
                     completedList.add(new Process(currentSRTF));
                     currentSRTF.arrivalTime = shortestJob.startTime; //currentSRTF switches, thus waits now on this arrival.
@@ -187,7 +187,7 @@ public class Algorithms {
                 shortestJob.remainingBurstTime--;
 
                 if (shortestJob.remainingBurstTime == 0) {
-                    shortestJob.waitTime = currentTime + 1 - shortestJob.arrivalTime - shortestJob.burstTime;
+                    shortestJob.waitTime += (startTime - currentSRTF.endTime);
                     shortestJob.endTime = currentTime + 1;
                     shortestJob.completed = true;
                     completedProcesses++;
