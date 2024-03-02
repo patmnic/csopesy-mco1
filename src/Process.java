@@ -38,7 +38,7 @@ public class Process {
 
     public int run(int burst, int start){
         this.startTime = start;
-        this.waitTime += start - this.endTime;
+        this.waitTime = start - this.endTime;
 
         if (this.burstTime <= burst) {
             burst = burstTime;
