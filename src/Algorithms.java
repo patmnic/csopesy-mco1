@@ -2,10 +2,8 @@ package src;
 
 import java.util.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Algorithms {
-
     public void firstComeFirstServe(int processNum, Process[] processes){
         System.out.println("First Come First Serve Algorithm (FCFS)");
 
@@ -148,65 +146,92 @@ public class Algorithms {
 
     public void shortestRemainingTimeFirst(int processNum, Process[] processes) {
         System.out.println("Shortest Remaining Time First Algorithm (SRTF)");
+//        int currentTime = 0, totalWaitTime = 0, lastID;
+//        ArrayList<Process> waiting = new ArrayList<>();
+//
+//
+//        order.sort(Comparator.comparingInt(o -> o.arrivalTime));
+//
+//
+//
+//        while (!order.isEmpty() || !waiting.isEmpty()){
+//
+//        }
 
         int currentTime = 0;
-        int completedProcesses = 0;
         int totalWaitTime = 0;
-        int startTime = 0;
+        ArrayList<Process> toArrive = new ArrayList<>();
+        Collections.addAll(toArrive, processes);
+        toArrive.sort(Comparator.comparingInt(o -> o.arrivalTime));
 
-        List<Process> completedList = new ArrayList<>();
+        ArrayList<Process> toBurst = new ArrayList<>();
+        Process next = toArrive.get(0);
 
-        Process currentSRTF = null;
+        while(!toArrive.isEmpty() || !toBurst.isEmpty()) {
+            if (!toArrive.isEmpty()) {
+                while (!toArrive.isEmpty()){
+                    if(toArrive.get(0).arrivalTime <= currentTime) {
+                        toBurst.add(toArrive.get(0));
+                        toArrive.remove(0);
+                        continue;
+                    }
 
-        while(completedProcesses < processNum) {
-            Process shortestJob = null;
-            int shortestTime = Integer.MAX_VALUE;
-            //Finds shortestjob
-            for (int i = 0; i < processNum; i++) {
-                Process process = processes[i];
-                if (!process.completed && process.arrivalTime <= currentTime && process.remainingBurstTime < shortestTime) {
-                    shortestJob = process;
-                    shortestTime = process.remainingBurstTime;
+                    next = toArrive.get(0);
+                    // if no arrived processes, skip to next arrival time
+                    if (toBurst.isEmpty()) {
+                        currentTime = next.arrivalTime;
+                    }
+                    break;
+                }
+                toBurst.sort(Comparator.comparingInt(o -> o.burstTime));
+            }
+
+            if(!toBurst.isEmpty()){
+                if (toArrive.isEmpty()) {
+                    // if all processes arrive, burst all waiting processes
+                    for (Process process : toBurst) {
+                        currentTime += process.run(process.burstTime, currentTime);
+                        totalWaitTime += process.waitTime;
+                    }
+                    break;
+                } else {
+                    Process shortestJob = toBurst.get(0);
+                    int shortestJobBurst;
+                    int runBurst = 0;
+                    while (runBurst > -1 && next != null) {
+                        // predict current job's remaining burst if it stops at next arrival
+                        runBurst = next.arrivalTime - currentTime;
+                        shortestJobBurst = shortestJob.burstTime - runBurst;
+
+                        // add next arrival to list of waiting
+                        toBurst.add(next);
+                        toArrive.remove(0);
+                        // if shortest job finishes or the newer job has a shorter burst,
+                        // run current job from start to arrival
+                        if (shortestJobBurst <= 0 || shortestJobBurst > next.burstTime) {
+                            currentTime += shortestJob.run(runBurst, currentTime);
+                            totalWaitTime += shortestJob.waitTime;
+                            if (shortestJobBurst <= 0){
+                                // remove job if done
+                                toBurst.remove(0);
+                            } else {
+                                // return to waiting if not done
+                                toBurst.set(0, shortestJob);
+                            }
+                            runBurst = -1;
+                        }
+                        // get next to arrive if possible
+                        if (toArrive.isEmpty()) {
+                            next = null;
+                        }
+                        else {
+                            next = toArrive.get(0);
+                        }
+                    }
+                    // sort waiting processes by burst time
+                    toBurst.sort(Comparator.comparingInt(o -> o.burstTime));
                 }
             }
-            //facilitate switches before setting shortest to current
-            if (currentSRTF != null){ //idea here it compares a from b, then adds a in appropriately.
-                if (currentSRTF.ID != shortestJob.ID && !currentSRTF.completed){
-                    currentSRTF.startTime = startTime;
-                    currentSRTF.waitTime = startTime - currentSRTF.endTime;
-                    currentSRTF.endTime = currentTime;
-                    completedList.add(new Process(currentSRTF));
-                    currentSRTF.arrivalTime = shortestJob.startTime; //currentSRTF switches, thus waits now on this arrival.
-                    startTime = currentTime;
-                }
-            } 
-
-            currentSRTF = shortestJob;
-
-            if (shortestJob != null) {
-                shortestJob.remainingBurstTime--;
-
-                if (shortestJob.remainingBurstTime == 0) {
-                    shortestJob.waitTime = currentTime + 1 - shortestJob.arrivalTime - shortestJob.burstTime;
-                    shortestJob.endTime = currentTime + 1;
-                    shortestJob.completed = true;
-                    completedProcesses++;
-                    totalWaitTime += currentTime + 1 - shortestJob.arrivalTime - shortestJob.burstTime;
-                    completedList.add(shortestJob);
-                }
-
-                // Update start time if the process just started executing
-                if (shortestJob.startTime == 0) {
-                    shortestJob.startTime = currentTime;
-                }
-            } 
-
-            currentTime++;
-        }
-
-        // Print process details
-        for (Process process : completedList) {
-            process.print();
         }
 
         // Calculate and print average waiting time
@@ -218,13 +243,16 @@ public class Algorithms {
         System.out.println("Round Robin Algorithm (RR)");
         int totalTime = 0, totalWaitTime = 0;
 
+        // sort processes by arrival time
         ArrayList<Process> order = new ArrayList<>();
         Collections.addAll(order, processes);
         order.sort(Comparator.comparingInt(o -> o.arrivalTime));
 
+        // round robin queue
         Queue<Process> queue = new LinkedList<>();
 
         while (!order.isEmpty() || !queue.isEmpty()) {
+            // if round-robin queue is empty, get arrived processes
             if (queue.isEmpty()) {
                 while (!order.isEmpty()){
                     if(order.get(0).arrivalTime <= totalTime) {
@@ -232,6 +260,7 @@ public class Algorithms {
                         order.remove(0);
                     }
                     else {
+                        // if no arrived processes, skip to next arrival time
                         if (queue.isEmpty()) {
                             totalTime = order.get(0).arrivalTime;
                         }
@@ -239,6 +268,7 @@ public class Algorithms {
                     }
                 }
             } else {
+                // run latest
                 Process process = queue.poll();
                 int burst = process.run(roundRobinTime, totalTime);
                 totalTime += burst;
